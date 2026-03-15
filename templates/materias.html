@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Materias</title>
+    <style>
+        table { width: 80%; border-collapse: collapse; margin: 20px auto; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <h1 style="text-align: center;">Materias Programadas</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Sigla</th>
+                <th>Nombre de Materia</th>
+                <th>Docente</th>
+                <th>Aula</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in materias %}
+            <tr>
+                <td>{{ m.sigla }}</td>
+                <td>{{ m.nombre_materia }}</td>
+                <td>{{ m.docente if m.docente else 'Sin asignar' }}</td>
+                <td>{{ m.aula if m.aula else 'Sin aula' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
