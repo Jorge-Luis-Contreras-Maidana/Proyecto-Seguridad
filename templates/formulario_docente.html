@@ -1,0 +1,16 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>Registrar Nuevo Docente</h1>
+
+    <form action="{{ url_for('nuevo_docente') }}" method="post" style="max-width: 400px; margin: auto;">
+        <h1>Nuevo Docente</h1>
+        <label>Nombre:</label><br><input type="text" name="nombre" required><br>
+        <label>Apellido:</label><br><input type="text" name="apellido" required><br>
+        <label>Especialidad:</label><br><input type="text" name="especialidad" required><br>
+        <label>Email:</label><br><input type="email" name="email" required><br><br>
+        <button type="submit">Registrar</button>
+        <a href="/docentes">Cancelar</a>
+    </form>
+
+{% endblock %}

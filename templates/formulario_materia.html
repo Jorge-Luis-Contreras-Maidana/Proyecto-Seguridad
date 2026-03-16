@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>Nueva Materia</h1>
+    <form action="{{ url_for('nueva_materia') }}" method="post" style="max-width: 400px; margin: auto;">
+        <label>Nombre Materia:</label><br><input type="text" name="nombre" required style="width: 100%; margin-bottom: 10px;"><br>
+        <label>Sigla:</label><br><input type="text" name="sigla" required style="width: 100%; margin-bottom: 10px;"><br>
+        
+        <label>Docente:</label><br>
+        <select name="id_docente" style="width: 100%; margin-bottom: 10px;">
+            {% for d in docentes %}
+                <option value="{{ d.id_docente }}">{{ d.nombre }}</option>
+            {% endfor %}
+        </select><br>
+        
+        <label>Aula:</label><br>
+        <select name="id_aula" style="width: 100%; margin-bottom: 10px;">
+            {% for a in aulas %}
+                <option value="{{ a.id_aula }}">{{ a.nombre_aula }}</option>
+            {% endfor %}
+        </select><br><br>
+        
+        <button type="submit">Guardar Materia</button>
+    </form>
+{% endblock %}

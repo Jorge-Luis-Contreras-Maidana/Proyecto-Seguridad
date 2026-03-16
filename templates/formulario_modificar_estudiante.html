@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>Modificar Estudiante</h1>
+    
+    <form action="{{ url_for('modificar_estudiante', id=estudiante.id_estudiante) }}" method="post" style="max-width: 400px; margin: auto;">
+        <label>Nombre:</label><br>
+        <input type="text" name="nombre" value="{{ estudiante.nombre }}" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+        
+        <label>Apellido:</label><br>
+        <input type="text" name="apellido" value="{{ estudiante.apellido }}" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Carrera:</label><br>
+        <input type="text" name="carrera" value="{{ estudiante.carrera }}" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+        
+        <label>Email:</label><br>
+        <input type="email" name="email" value="{{ estudiante.email }}" style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+        
+        <label>Teléfono:</label><br>
+        <input type="text" name="telefono" value="{{ estudiante.telefono }}" style="width: 100%; padding: 8px; margin-bottom: 20px;"><br>
+        
+        <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer;">Actualizar</button>
+        <a href="/estudiantes" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none;">Cancelar</a>
+    </form>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>Nueva Inscripción</h1>
+    <form action="{{ url_for('nueva_inscripcion') }}" method="post" style="max-width: 400px; margin: auto;">
+        <label>Estudiante:</label><br>
+        <select name="id_estudiante" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+            {% for e in estudiantes %}
+                <option value="{{ e.id_estudiante }}">{{ e.nombre }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label>Materia:</label><br>
+        <select name="id_materia" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+            {% for m in materias %}
+                <option value="{{ m.id_materia }}">{{ m.nombre_materia }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit" style="padding: 10px 20px; background: #28a745; color: white;">Inscribir</button>
+        <a href="/inscripciones">Cancelar</a>
+    </form>
+{% endblock %}

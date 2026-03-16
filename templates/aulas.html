@@ -1,0 +1,33 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>Aulas Disponibles</h1>
+
+    <div style="margin-bottom: 20px;">
+        <a href="/aulas/nuevo" style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">+ Nueva Aula</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre Aula</th>
+                <th>Capacidad</th>
+                <th>Ubicación</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in aulas %}
+            <tr>
+                <td>{{ a.nombre_aula }}</td>
+                <td>{{ a.capacidad }}</td>
+                <td>{{ a.ubicacion }}</td>
+                <td>
+                    <a href="/aulas/modificar/{{ a.id_aula }}">Editar</a> | 
+                    <a href="/aulas/eliminar/{{ a.id_aula }}" onclick="return confirm('¿Seguro?')">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

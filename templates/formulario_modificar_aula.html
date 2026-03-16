@@ -1,0 +1,19 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>Modificar Aula</h1>
+    
+    <form action="{{ url_for('modificar_aula', id=aula.id_aula) }}" method="post" style="max-width: 400px; margin: auto;">
+        <label>Nombre del Aula:</label><br>
+        <input type="text" name="nombre_aula" value="{{ aula.nombre_aula }}" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+        
+        <label>Capacidad:</label><br>
+        <input type="number" name="capacidad" value="{{ aula.capacidad }}" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+        
+        <label>Ubicación:</label><br>
+        <input type="text" name="ubicacion" value="{{ aula.ubicacion }}" required style="width: 100%; padding: 8px; margin-bottom: 20px;"><br>
+        
+        <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer;">Actualizar Datos</button>
+        <a href="/aulas" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none;">Cancelar</a>
+    </form>
+{% endblock %}

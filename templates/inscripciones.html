@@ -1,0 +1,45 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>Inscripciones Realizadas</h1>
+
+    <div style="margin-bottom: 20px;">
+        <a href="/inscripciones/nuevo" 
+           style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">
+           + Nueva Inscripción
+        </a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre Estudiante</th>
+                <th>Apellido Estudiante</th>
+                <th>Materia</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for i in inscripciones %}
+    <tr>
+        <td>{{ i.id_inscripcion }}</td>
+        <td>{{ i.est_nombre }}</td>
+        <td>{{ i.est_apellido }}</td>
+        <td>{{ i.nombre_materia }}</td>
+        <td>{{ i.fecha_inscripcion }}</td>
+        <td>
+            <a href="/inscripciones/modificar/{{ i.id_inscripcion }}">Editar</a> | 
+            <a href="/inscripciones/eliminar/{{ i.id_inscripcion }}" 
+               onclick="return confirm('¿Estás seguro de eliminar esta inscripción?')">Eliminar</a>
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="6" style="text-align: center;">No hay inscripciones registradas.</td>
+    </tr>
+    {% endfor %}
+</tbody>
+    </table>
+{% endblock %}

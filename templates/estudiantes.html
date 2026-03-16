@@ -1,17 +1,11 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Lista de Estudiantes</title>
-    <style>
-        table { width: 80%; border-collapse: collapse; margin: 20px auto; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #f2f2f2; }
-    </style>
-</head>
-<body>
+{% extends "index.html" %}
 
-    <h1 style="text-align: center;">Estudiantes Registrados</h1>
+{% block content %}
+    <h1>Estudiantes Registrados</h1>
+
+    <div style="margin-bottom: 20px;">
+        <a href="/estudiantes/nuevo" style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">+ Añadir Estudiante</a>
+    </div>
 
     <table>
         <thead>
@@ -20,6 +14,7 @@
                 <th>Apellido</th>
                 <th>Carrera</th>
                 <th>Email</th>
+                <th>Teléfono</th> <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -29,10 +24,16 @@
                 <td>{{ e.apellido }}</td>
                 <td>{{ e.carrera }}</td>
                 <td>{{ e.email if e.email else 'No registrado' }}</td>
+                <td>{{ e.telefono if e.telefono else 'Sin número' }}</td> <td>
+                    <a href="/estudiantes/modificar/{{ e.id_estudiante }}">Editar</a> | 
+                    <a href="/estudiantes/eliminar/{{ e.id_estudiante }}" onclick="return confirm('¿Seguro?')">Eliminar</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center;">No hay estudiantes registrados.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>Modificar Materia</h1>
+    <form action="{{ url_for('modificar_materia', id=materia.id_materia) }}" method="post" style="max-width: 400px; margin: auto;">
+        <label>Nombre:</label><br><input type="text" name="nombre" value="{{ materia.nombre_materia }}" required style="width: 100%;"><br>
+        <label>Sigla:</label><br><input type="text" name="sigla" value="{{ materia.sigla }}" required style="width: 100%;"><br>
+        
+        <label>Docente:</label><br>
+        <select name="id_docente" style="width: 100%;">
+            {% for d in docentes %}
+                <option value="{{ d.id_docente }}" {% if d.id_docente == materia.id_docente %}selected{% endif %}>
+                    {{ d.nombre }}
+                </option>
+            {% endfor %}
+        </select><br>
+        
+        <button type="submit">Guardar Cambios</button>
+    </form>
+{% endblock %}

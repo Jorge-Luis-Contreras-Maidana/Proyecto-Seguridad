@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>Registrar Nuevo Estudiante</h1>
+    
+    <form action="{{ url_for('nuevo_estudiante') }}" method="post" style="max-width: 400px; margin: auto;">
+        <label>Nombre:</label><br>
+        <input type="text" name="nombre" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+        
+        <label>Apellido:</label><br>
+        <input type="text" name="apellido" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+        
+        <label>Carrera:</label><br>
+        <input type="text" name="carrera" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+        
+        <label>Email:</label><br>
+        <input type="email" name="email" style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Teléfono:</label><br>
+        <input type="text" name="telefono" style="width: 100%; padding: 8px; margin-bottom: 20px;"><br>
+        
+        <button type="submit" style="padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer;">Guardar</button>
+        <a href="/estudiantes" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none;">Cancelar</a>
+    </form>
+{% endblock %}

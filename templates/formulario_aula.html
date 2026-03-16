@@ -1,0 +1,19 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>Registrar Nueva Aula</h1>
+    
+    <form action="{{ url_for('nueva_aula') }}" method="post" style="max-width: 400px; margin: auto;">
+        <label>Nombre del Aula:</label><br>
+        <input type="text" name="nombre_aula" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+        
+        <label>Capacidad (personas):</label><br>
+        <input type="number" name="capacidad" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+        
+        <label>Ubicación:</label><br>
+        <input type="text" name="ubicacion" required style="width: 100%; padding: 8px; margin-bottom: 20px;"><br>
+        
+        <button type="submit" style="padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer;">Guardar Aula</button>
+        <a href="/aulas" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none;">Cancelar</a>
+    </form>
+{% endblock %}

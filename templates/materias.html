@@ -1,25 +1,21 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Lista de Materias</title>
-    <style>
-        table { width: 80%; border-collapse: collapse; margin: 20px auto; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #f2f2f2; }
-    </style>
-</head>
-<body>
+{% extends "index.html" %}
 
-    <h1 style="text-align: center;">Materias Programadas</h1>
+{% block content %}
+    <h1>Materias Programadas</h1>
+
+    <div style="margin-bottom: 20px;">
+        <a href="/materias/nuevo" style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">+ Nueva Materia</a>
+    </div>
 
     <table>
         <thead>
             <tr>
                 <th>Sigla</th>
                 <th>Nombre de Materia</th>
-                <th>Docente</th>
+                <th>Docente (Nombre)</th>
+                <th>Docente (Apellido)</th>
                 <th>Aula</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -27,12 +23,19 @@
             <tr>
                 <td>{{ m.sigla }}</td>
                 <td>{{ m.nombre_materia }}</td>
-                <td>{{ m.docente if m.docente else 'Sin asignar' }}</td>
+                <td>{{ m.doc_nombre if m.doc_nombre else 'Sin asignar' }}</td>
+                <td>{{ m.doc_apellido if m.doc_apellido else 'Sin asignar' }}</td>
                 <td>{{ m.aula if m.aula else 'Sin aula' }}</td>
+                <td>
+                    <a href="/materias/modificar/{{ m.id_materia }}">Editar</a> | 
+                    <a href="/materias/eliminar/{{ m.id_materia }}" onclick="return confirm('¿Seguro?')">Eliminar</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center;">No hay materias programadas.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-
-</body>
-</html>
+{% endblock %}

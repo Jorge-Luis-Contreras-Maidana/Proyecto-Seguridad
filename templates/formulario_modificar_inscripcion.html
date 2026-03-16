@@ -1,0 +1,29 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>Modificar Inscripción</h1>
+    
+    <form action="{{ url_for('modificar_inscripcion', id=inscripcion.id_inscripcion) }}" method="post" style="max-width: 400px; margin: auto;">
+        
+        <label>Estudiante:</label><br>
+        <select name="id_estudiante" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+            {% for e in estudiantes %}
+                <option value="{{ e.id_estudiante }}" {% if e.id_estudiante == inscripcion.id_estudiante %}selected{% endif %}>
+                    {{ e.nombre }} {{ e.apellido }}
+                </option>
+            {% endfor %}
+        </select><br>
+        
+        <label>Materia:</label><br>
+        <select name="id_materia" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+            {% for m in materias %}
+                <option value="{{ m.id_materia }}" {% if m.id_materia == inscripcion.id_materia %}selected{% endif %}>
+                    {{ m.nombre_materia }}
+                </option>
+            {% endfor %}
+        </select><br>
+        
+        <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none;">Guardar Cambios</button>
+        <a href="/inscripciones" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none;">Cancelar</a>
+    </form>
+{% endblock %}

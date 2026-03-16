@@ -1,0 +1,39 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>Docentes Registrados</h1>
+
+    <div style="margin-bottom: 20px;">
+        <a href="/docentes/nuevo" style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">+ Nuevo Docente</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Especialidad</th>
+                <th>Email</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in docentes %}
+            <tr>
+                <td>{{ d.nombre }}</td>
+                <td>{{ d.apellido }}</td>
+                <td>{{ d.especialidad }}</td>
+                <td>{{ d.email }}</td>
+                <td>
+                    <a href="/docentes/modificar/{{ d.id_docente }}">Editar</a> | 
+                    <a href="/docentes/eliminar/{{ d.id_docente }}" onclick="return confirm('¿Seguro que deseas eliminar este docente?')">Eliminar</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center;">No hay docentes registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
