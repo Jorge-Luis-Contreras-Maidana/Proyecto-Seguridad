@@ -7,6 +7,7 @@ app = Flask(__name__)
 app.secret_key = "universidad_llave_maestra"
 
 # --- CONFIGURACIÓN DE BASE DE DATOS ---
+# --Cambio Ejemplo
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
