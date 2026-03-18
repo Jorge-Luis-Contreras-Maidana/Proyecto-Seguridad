@@ -7,8 +7,12 @@ app = Flask(__name__)
 app.secret_key = "universidad_llave_maestra"
 
 # --- CONFIGURACIÓN DE BASE DE DATOS ---
+<<<<<<< Updated upstream
 
 app.config['MYSQL_HOST'] = 'localhost'
+=======
+app.config['MYSQL_HOST'] = '127.0.0.1'
+>>>>>>> Stashed changes
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'universidad_sistema' 
