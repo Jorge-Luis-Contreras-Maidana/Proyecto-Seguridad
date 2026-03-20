@@ -1,0 +1,135 @@
+/* 1. Estilos Globales para centrado total */
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 2. Header y Footer básicos */
+header {
+    background-color: #ffffff;
+    padding: 15px 30px;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    text-align: center; /* Centrar el título del header */
+}
+
+footer {
+    margin-top: auto; /* Empujar el footer al final de la pantalla */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
+    text-align: center;
+    font-size: 0.85em;
+    color: #666;
+}
+
+hr { border: 0; border-top: 1px solid #eee; margin: 0; }
+
+/* 3. Contenedor del Login (Flexbox para centrar la tarjeta) */
+/* Cambia el main por esto */
+main {
+    flex: 1;
+    padding: 40px; /* Un poco más de espacio */
+    display: block; /* Por defecto, que las cosas fluyan normal hacia abajo */
+}
+
+/* Agregamos una clase especial para el centrado del login */
+.centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh; /* Para que se vea centrado verticalmente */
+}
+
+.login-card {
+    background: #fff;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.login-card h1 {
+    margin: 0 0 35px 0;
+    color: #2c3e50;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+
+/* 4. Formulario Estilizado */
+.form-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9em;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box; /* Importante para el ancho */
+    font-size: 1em;
+}
+
+.form-group input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 8px rgba(0,123,255,0.25);
+}
+
+/* 5. Botones */
+.btn-group {
+    display: flex;
+    gap: 15px; /* Espacio entre botones */
+}
+
+.btn {
+    flex: 1; /* Que ocupen la mitad del ancho cada uno */
+    padding: 14px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s, transform 0.1s;
+    font-size: 1em;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover { background-color: #0056b3; }
+.btn-primary:active { transform: scale(0.98); } /* Efecto clic */
+
+.btn-secondary {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.btn-secondary:hover { background-color: #ced4da; }
+
+/* 6. Alertas (Por si hay errores de login) */
+.alert {
+    padding: 15px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.9em;
+}
+.alert-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }

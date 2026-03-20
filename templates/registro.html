@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Usuario - Sistema U</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .requisitos { font-size: 0.85em; color: #666; margin-top: 5px; }
+        .error-msg { color: #d9534f; background: #f2dede; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Crear Nueva Cuenta</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="error-msg">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('registro') }}" method="POST">
+            <div class="form-group">
+                <label>Nombre de Usuario:</label>
+                <input type="text" name="username" required placeholder="Ej: jorge_admin">
+            </div>
+            
+            <div class="form-group">
+                <label>Correo Electrónico:</label>
+                <input type="email" name="email" required placeholder="correo@ejemplo.com">
+            </div>
+
+            <div class="form-group">
+                <label>Contraseña:</label>
+                <input type="password" name="password" required>
+                <div class="requisitos">
+                    <b>La contraseña debe tener:</b>
+                    <ul>
+                        <li>Al menos 8 caracteres</li>
+                        <li>Una mayúscula y una minúscula</li>
+                        <li>Un número y un carácter especial (!@#$)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary">REGISTRARSE</button>
+            <p style="margin-top: 15px;">
+                <a href="{{ url_for('login') }}">¿Ya tienes cuenta? Inicia sesión aquí</a>
+            </p>
+        </form>
+    </div>
+</body>
+</html>

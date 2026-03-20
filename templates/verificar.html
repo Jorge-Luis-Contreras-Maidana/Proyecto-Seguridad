@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="centered-container">
+    <div class="login-card">
+        <h1>VERIFICACIÓN</h1>
+        <p>Introduce el código de 6 dígitos enviado a tu correo.</p>
+        <form action="{{ url_for('segundo_factor') }}" method="post">
+            <div class="form-group">
+                <input type="text" name="codigo" maxlength="6" required 
+                       style="text-align: center; font-size: 2em; letter-spacing: 10px;" placeholder="000000">
+            </div>
+            <button type="submit" class="btn btn-primary">ENTRAR</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

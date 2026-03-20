@@ -1,39 +1,62 @@
-{% extends "index.html" %}
+{% extends "base.html" %}
 
 {% block content %}
-    <h1>Estudiantes Registrados</h1>
+<div style="padding: 10px;">
+    <h1 style="color: #2c3e50; margin-bottom: 20px;">Estudiantes Registrados</h1>
 
+    {# SOLO ADMIN PUEDE VER EL BOTÓN DE AÑADIR NUEVOS ESTUDIANTES #}
+    {% if session.get('rol') == 'admin' %}
     <div style="margin-bottom: 20px;">
-        <a href="/estudiantes/nuevo" style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">+ Añadir Estudiante</a>
+        <a href="{{ url_for('nuevo_estudiante') }}" 
+           style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+           + Añadir Estudiante
+        </a>
     </div>
+    {% endif %}
 
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Carrera</th>
-                <th>Email</th>
-                <th>Teléfono</th> <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for e in estudiantes %}
-            <tr>
-                <td>{{ e.nombre }}</td>
-                <td>{{ e.apellido }}</td>
-                <td>{{ e.carrera }}</td>
-                <td>{{ e.email if e.email else 'No registrado' }}</td>
-                <td>{{ e.telefono if e.telefono else 'Sin número' }}</td> <td>
-                    <a href="/estudiantes/modificar/{{ e.id_estudiante }}">Editar</a> | 
-                    <a href="/estudiantes/eliminar/{{ e.id_estudiante }}" onclick="return confirm('¿Seguro?')">Eliminar</a>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="6" style="text-align: center;">No hay estudiantes registrados.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="background-color: #2a5298; color: white;">
+                    <th style="padding: 15px;">Nombre</th>
+                    <th style="padding: 15px;">Apellido</th>
+                    <th style="padding: 15px;">Carrera</th>
+                    <th style="padding: 15px;">Email</th>
+                    <th style="padding: 15px;">Teléfono</th>
+                    {# OCULTAR COLUMNA DE ACCIONES PARA EL ROL 'USER' #}
+                    {% if session.get('rol') in ['admin', 'operador'] %}
+                    <th style="padding: 15px; text-align: center;">Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in estudiantes %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 12px 15px;">{{ e.nombre }}</td>
+                    <td style="padding: 12px 15px;">{{ e.apellido }}</td>
+                    <td style="padding: 12px 15px;"><span style="color: #007bff; font-weight: 500;">{{ e.carrera }}</span></td>
+                    <td style="padding: 12px 15px; color: #666;">{{ e.email if e.email else 'No registrado' }}</td>
+                    <td style="padding: 12px 15px; color: #666;">{{ e.telefono if e.telefono else 'Sin número' }}</td>
+                    
+                    {% if session.get('rol') in ['admin', 'operador'] %}
+                    <td style="padding: 12px 15px; text-align: center;">
+                        {# ADMIN Y OPERADOR PUEDEN MODIFICAR #}
+                        <a href="{{ url_for('modificar_estudiante', id=e.id_estudiante) }}" style="color: #007bff; text-decoration: none; font-weight: bold; margin-right: 10px;">Editar</a>
+                        
+                        {# SOLO EL ADMIN PUEDE ELIMINAR #}
+                        {% if session.get('rol') == 'admin' %}
+                            | <a href="{{ url_for('eliminar_estudiante', id=e.id_estudiante) }}" style="color: #dc3545; text-decoration: none; font-weight: bold;" onclick="return confirm('¿Seguro que deseas eliminar a este estudiante?')">Eliminar</a>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="padding: 30px; text-align: center; color: #888;">No hay estudiantes registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

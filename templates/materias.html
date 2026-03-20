@@ -1,41 +1,62 @@
-{% extends "index.html" %}
+{% extends "base.html" %}
 
 {% block content %}
-    <h1>Materias Programadas</h1>
+<div style="padding: 10px;">
+    <h1 style="color: #2c3e50; margin-bottom: 20px;">Materias Programadas</h1>
 
+    {# BLOQUEO: Solo el Admin ve el botón de crear #}
+    {% if session.get('rol') == 'admin' %}
     <div style="margin-bottom: 20px;">
-        <a href="/materias/nuevo" style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">+ Nueva Materia</a>
+        <a href="{{ url_for('nueva_materia') }}" 
+           style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+           + Nueva Materia
+        </a>
     </div>
+    {% endif %}
 
-    <table>
-        <thead>
-            <tr>
-                <th>Sigla</th>
-                <th>Nombre de Materia</th>
-                <th>Docente (Nombre)</th>
-                <th>Docente (Apellido)</th>
-                <th>Aula</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for m in materias %}
-            <tr>
-                <td>{{ m.sigla }}</td>
-                <td>{{ m.nombre_materia }}</td>
-                <td>{{ m.doc_nombre if m.doc_nombre else 'Sin asignar' }}</td>
-                <td>{{ m.doc_apellido if m.doc_apellido else 'Sin asignar' }}</td>
-                <td>{{ m.aula if m.aula else 'Sin aula' }}</td>
-                <td>
-                    <a href="/materias/modificar/{{ m.id_materia }}">Editar</a> | 
-                    <a href="/materias/eliminar/{{ m.id_materia }}" onclick="return confirm('¿Seguro?')">Eliminar</a>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="6" style="text-align: center;">No hay materias programadas.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="background-color: #2a5298; color: white;">
+                    <th style="padding: 15px;">Sigla</th>
+                    <th style="padding: 15px;">Nombre de Materia</th>
+                    <th style="padding: 15px;">Docente (Nombre)</th>
+                    <th style="padding: 15px;">Docente (Apellido)</th>
+                    <th style="padding: 15px;">Aula</th>
+                    {# BLOQUEO: Ocultar columna acciones si es 'user' #}
+                    {% if session.get('rol') in ['admin', 'operador'] %}
+                    <th style="padding: 15px; text-align: center;">Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in materias %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 12px 15px;"><strong>{{ m.sigla }}</strong></td>
+                    <td style="padding: 12px 15px;">{{ m.nombre_materia }}</td>
+                    <td style="padding: 12px 15px;">{{ m.doc_nombre if m.doc_nombre else 'Sin asignar' }}</td>
+                    <td style="padding: 12px 15px;">{{ m.doc_apellido if m.doc_apellido else 'Sin asignar' }}</td>
+                    <td style="padding: 12px 15px;"><span style="color: #007bff; font-weight: 500;">{{ m.aula if m.aula else 'Sin aula' }}</span></td>
+                    
+                    {% if session.get('rol') in ['admin', 'operador'] %}
+                    <td style="padding: 12px 15px; text-align: center;">
+                        {# Admin y Operador pueden editar #}
+                        <a href="{{ url_for('modificar_materia', id=m.id_materia) }}" style="color: #007bff; text-decoration: none; font-weight: bold; margin-right: 10px;">Editar</a>
+                        
+                        {# Solo Admin puede eliminar #}
+                        {% if session.get('rol') == 'admin' %}
+                            | <a href="{{ url_for('eliminar_materia', id=m.id_materia) }}" style="color: #dc3545; text-decoration: none; font-weight: bold;" onclick="return confirm('¿Seguro?')">Eliminar</a>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="padding: 30px; text-align: center; color: #888;">No hay materias programadas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

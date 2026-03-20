@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="padding: 10px;">
+    <h1 style="color: #2c3e50; margin-bottom: 25px;">Historial de Accesos y Acciones</h1>
+
+    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="background-color: #2a5298; color: white;">
+                    <th style="padding: 15px;">Fecha/Hora</th>
+                    <th style="padding: 15px;">Usuario</th>
+                    <th style="padding: 15px;">Evento</th>
+                    <th style="padding: 15px;">Resultado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 12px 15px; color: #666;">{{ log.fecha_hora }}</td>
+                    <td style="padding: 12px 15px;"><strong>{{ log.usuario_intentado }}</strong></td>
+                    <td style="padding: 12px 15px;">{{ log.evento }}</td>
+                    <td style="padding: 12px 15px; font-weight: bold; color: {{ 'green' if log.resultado == 'Válido' else 'red' }}">
+                        {{ log.resultado }}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="padding: 30px; text-align: center; color: #888;">No hay registros de actividad en el historial.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

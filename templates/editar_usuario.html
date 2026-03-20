@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="centered-container" style="max-width: 500px; margin: auto; margin-top: 50px;">
+    <div class="login-card" style="background: white; padding: 30px; border-radius: 10px; shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        <h2 style="text-align: center; color: #333;">Editar Usuario: {{ u.username }}</h2>
+        <hr>
+        <form action="{{ url_for('editar_usuario', id=u.id) }}" method="POST">
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>Correo Electrónico:</label>
+                <input type="email" name="email" value="{{ u.email }}" class="form-control" style="width: 100%; padding: 8px;" required>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Rol del Sistema:</label>
+                <select name="rol" class="form-control" style="width: 100%; padding: 8px;">
+                    <option value="user" {% if u.rol == 'user' %}selected{% endif %}>User (Estudiante)</option>
+                    <option value="operador" {% if u.rol == 'operador' %}selected{% endif %}>Operador</option>
+                    <option value="auditor" {% if u.rol == 'auditor' %}selected{% endif %}>Auditor</option>
+                    <option value="admin" {% if u.rol == 'admin' %}selected{% endif %}>Administrador</option>
+                </select>
+            </div>
+
+            <div style="display: flex; justify-content: space-between;">
+                <button type="submit" class="btn btn-primary" style="background: #28a745; border: none; padding: 10px 20px; color: white; cursor: pointer;">Guardar Cambios</button>
+                <a href="{{ url_for('gestionar_usuarios') }}" class="btn btn-secondary" style="text-decoration: none; color: #666; padding: 10px;">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

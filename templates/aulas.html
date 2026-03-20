@@ -1,33 +1,62 @@
-{% extends "index.html" %}
+{% extends "base.html" %}
 
 {% block content %}
-    <h1>Aulas Disponibles</h1>
+<div style="padding: 10px;">
+    <h1 style="color: #2c3e50; margin-bottom: 20px;">Aulas Disponibles</h1>
 
+    {# SOLO EL ADMIN PUEDE VER EL BOTÓN DE CREAR NUEVAS AULAS #}
+    {% if session.get('rol') == 'admin' %}
     <div style="margin-bottom: 20px;">
-        <a href="/aulas/nuevo" style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">+ Nueva Aula</a>
+        <a href="{{ url_for('nueva_aula') }}" 
+           style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+           + Nueva Aula
+        </a>
     </div>
+    {% endif %}
 
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre Aula</th>
-                <th>Capacidad</th>
-                <th>Ubicación</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for a in aulas %}
-            <tr>
-                <td>{{ a.nombre_aula }}</td>
-                <td>{{ a.capacidad }}</td>
-                <td>{{ a.ubicacion }}</td>
-                <td>
-                    <a href="/aulas/modificar/{{ a.id_aula }}">Editar</a> | 
-                    <a href="/aulas/eliminar/{{ a.id_aula }}" onclick="return confirm('¿Seguro?')">Eliminar</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="background-color: #2a5298; color: white;">
+                    <th style="padding: 15px;">Nombre Aula</th>
+                    <th style="padding: 15px;">Capacidad</th>
+                    <th style="padding: 15px;">Ubicación</th>
+                    {# OCULTAMOS LA COLUMNA DE ACCIONES SI ES UN USUARIO NORMAL #}
+                    {% if session.get('rol') in ['admin', 'operador'] %}
+                    <th style="padding: 15px; text-align: center;">Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in aulas %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 12px 15px;"><strong>{{ a.nombre_aula }}</strong></td>
+                    <td style="padding: 12px 15px;">
+                        <span style="background-color: #e9ecef; color: #444; padding: 4px 10px; border-radius: 15px; font-size: 0.9em; font-weight: bold;">
+                            {{ a.capacidad }} pers.
+                        </span>
+                    </td>
+                    <td style="padding: 12px 15px; color: #666;">{{ a.ubicacion }}</td>
+                    
+                    {% if session.get('rol') in ['admin', 'operador'] %}
+                    <td style="padding: 12px 15px; text-align: center;">
+                        {# ADMIN Y OPERADOR PUEDEN EDITAR #}
+                        <a href="{{ url_for('modificar_aula', id=a.id_aula) }}" style="color: #007bff; text-decoration: none; font-weight: bold; margin-right: 10px;">Editar</a>
+                        
+                        {# SOLO EL ADMIN PUEDE ELIMINAR #}
+                        {% if session.get('rol') == 'admin' %}
+                            | <a href="{{ url_for('eliminar_aula', id=a.id_aula) }}" style="color: #dc3545; text-decoration: none; font-weight: bold;" onclick="return confirm('¿Estás seguro de eliminar esta aula?')">Eliminar</a>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="padding: 30px; text-align: center; color: #888;">No hay aulas registradas en el sistema.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}
