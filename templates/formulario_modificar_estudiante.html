@@ -1,25 +1,54 @@
 {% extends "inicio.html" %}
 
 {% block content %}
-    <h1>Modificar Estudiante</h1>
-    
-    <form action="{{ url_for('modificar_estudiante', id=estudiante.id_estudiante) }}" method="post" style="max-width: 400px; margin: auto;">
-        <label>Nombre:</label><br>
-        <input type="text" name="nombre" value="{{ estudiante.nombre }}" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
-        
-        <label>Apellido:</label><br>
-        <input type="text" name="apellido" value="{{ estudiante.apellido }}" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+<h1 style="text-align: center; color: #333;">Modificar Información</h1>
 
-        <label>Carrera:</label><br>
-        <input type="text" name="carrera" value="{{ estudiante.carrera }}" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
-        
-        <label>Email:</label><br>
-        <input type="email" name="email" value="{{ estudiante.email }}" style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
-        
-        <label>Teléfono:</label><br>
-        <input type="text" name="telefono" value="{{ estudiante.telefono }}" style="width: 100%; padding: 8px; margin-bottom: 20px;"><br>
-        
-        <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer;">Actualizar</button>
-        <a href="/estudiantes" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none;">Cancelar</a>
-    </form>
+<form action="{{ url_for('modificar_estudiante', id=estudiante.id_estudiante) }}" method="post" style="max-width: 450px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+    
+    {% set es_estudiante = session.get('rol') == 'user' %}
+
+    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #eee;">
+        <p style="margin: 0; color: #666; font-size: 0.9em; font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 5px; margin-bottom: 10px;">
+            Identidad del Estudiante
+        </p>
+
+        {% if es_estudiante %}
+            <p style="margin: 5px 0;"><strong>Nombre Completo:</strong> {{ estudiante.nombre }} {{ estudiante.apellido }}</p>
+            <p style="margin: 5px 0;"><strong>Carrera:</strong> {{ estudiante.carrera }}</p>
+            <p style="margin: 5px 0;"><strong>Matrícula:</strong> {{ estudiante.id_estudiante }}</p>
+            <div style="margin-top: 10px; padding: 8px; background: #fff3cd; color: #856404; border-radius: 5px; font-size: 0.8em;">
+                ⚠️ Para modificar estos datos, debe acudir a ventanilla de su facultad.
+            </div>
+        {% else %}
+            <label>Nombre:</label>
+            <input type="text" name="nombre" value="{{ estudiante.nombre }}" class="form-control" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            
+            <label>Apellido:</label>
+            <input type="text" name="apellido" value="{{ estudiante.apellido }}" class="form-control" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+
+            <label>Carrera:</label>
+            <input type="text" name="carrera" value="{{ estudiante.carrera }}" class="form-control" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        {% endif %}
+    </div>
+
+    <p style="font-size: 0.9em; color: #007bff; font-weight: bold; margin-bottom: 10px;">Datos de contacto:</p>
+
+    <label>Correo Electrónico:</label><br>
+    <input type="email" name="email" value="{{ estudiante.email }}" required
+           style="width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #007bff; border-radius: 5px;"><br>
+    
+    <label>Teléfono / Celular:</label><br>
+    <input type="text" name="telefono" value="{{ estudiante.telefono }}" required
+           style="width: 100%; padding: 10px; margin-bottom: 25px; border: 1px solid #007bff; border-radius: 5px;"><br>
+    
+    <div style="text-align: center; display: flex; gap: 10px; justify-content: center;">
+        <button type="submit" style="padding: 12px 25px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+            Guardar Cambios
+        </button>
+        <a href="{{ url_for('perfil') if es_estudiante else '/estudiantes' }}" 
+           style="padding: 12px 25px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+            Cancelar
+        </a>
+    </div>
+</form>
 {% endblock %}

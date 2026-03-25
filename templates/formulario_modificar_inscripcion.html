@@ -9,8 +9,7 @@
         <select name="id_estudiante" style="width: 100%; padding: 8px; margin-bottom: 10px;">
             {% for e in estudiantes %}
                 <option value="{{ e.id_estudiante }}" {% if e.id_estudiante == inscripcion.id_estudiante %}selected{% endif %}>
-                    {{ e.nombre }} {{ e.apellido }}
-                </option>
+                    {{ e.nombre }} {{ e.apellido }}  </option>
             {% endfor %}
         </select><br>
         

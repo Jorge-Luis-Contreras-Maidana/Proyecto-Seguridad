@@ -1,16 +1,23 @@
 {% extends "inicio.html" %}
 
 {% block content %}
-    <h1>Registrar Nuevo Docente</h1>
+    <h1 style="color: #2c3e50; margin-bottom: 20px;">Registrar Nuevo Docente</h1>
 
     <form action="{{ url_for('nuevo_docente') }}" method="post" style="max-width: 400px; margin: auto;">
-        <h1>Nuevo Docente</h1>
-        <label>Nombre:</label><br><input type="text" name="nombre" required><br>
-        <label>Apellido:</label><br><input type="text" name="apellido" required><br>
-        <label>Especialidad:</label><br><input type="text" name="especialidad" required><br>
-        <label>Email:</label><br><input type="email" name="email" required><br><br>
-        <button type="submit">Registrar</button>
-        <a href="/docentes">Cancelar</a>
+        
+        <label>Nombre:</label><br>
+        <input type="text" name="nombre" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+        
+        <label>Apellido:</label><br>
+        <input type="text" name="apellido" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+        
+        <label>Especialidad:</label><br>
+        <input type="text" name="especialidad" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+        
+        <label>Email:</label><br>
+        <input type="email" name="email" required style="width: 100%; padding: 8px; margin-bottom: 20px;"><br>
+        
+        <button type="submit" style="padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold;">Registrar</button>
+        <a href="/docentes" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; display: inline-block;">Cancelar</a>
     </form>
-
 {% endblock %}

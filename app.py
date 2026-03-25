@@ -21,10 +21,11 @@ app.secret_key = "miClaveSegura" # Llave para cifrar las sesiones del navegador
 
 # Configuración para Gmail (Envío de códigos)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_DEFAULT_SENDER'] = ('Sistema de Gestión Académica', 'jorge61162559@gmail.com') #Se cambio el nombre del emisor
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'jorge61162559@gmail.com'
-app.config['MAIL_PASSWORD'] = 'ebrqsslpuzfoxfjy' 
+app.config['MAIL_PASSWORD'] = 'suqmwnblhdfarsjx' 
 mail = Mail(app)
 
 # Configuración de Base de Datos
@@ -57,6 +58,7 @@ def login_required(view):
     @wraps(view)
     def wrapped_view(*args, **kwargs):
         if 'user_id' not in session:
+            # flash("Loguéate primero para acceder a esta sección", "danger")
             return redirect(url_for('login'))
         return view(*args, **kwargs)
     return wrapped_view
@@ -100,34 +102,94 @@ def registro():
         return redirect(url_for('login'))
     return render_template("registro.html")
 
+
+
+
+
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        nom_usuario = request.form["usuario"]
-        password = request.form["password"]
+        tipo = request.form.get("tipo_usuario") 
+        nom_usuario = request.form["usuario"].strip()
+        password = request.form["password"].strip()
+        
         cursor = conexion.connection.cursor(MySQLdb.cursors.DictCursor)
         
+        # Buscamos al usuario en la tabla central de accesos
         cursor.execute("SELECT * FROM usuarios WHERE username = %s", (nom_usuario,))
         usuario = cursor.fetchone()
 
-        if usuario and check_password_hash(usuario["password_hash"], password):
+        login_exitoso = False
+
+        if usuario:
+            # --- LÓGICA PARA ESTUDIANTES ---
+            if tipo == "estudiante" and usuario["id_estudiante"] is not None:
+                # Traemos el CI y el password_hash de la tabla ESTUDIANTES (donde Jorge ya tiene datos)
+                cursor.execute(
+                    "SELECT ci, password_hash FROM estudiantes WHERE id_estudiante = %s",
+                    (usuario["id_estudiante"],)
+                )
+                est_data = cursor.fetchone()
+
+                if est_data:
+                    # Caso A: El estudiante YA tiene un password_hash (ya usó recuperación)
+                    if est_data["password_hash"] is not None:
+                        if check_password_hash(est_data["password_hash"], password):
+                            login_exitoso = True
+                    
+                    # Caso B: No tiene hash, verificamos si está usando su CI como clave temporal
+                    elif password == str(est_data["ci"]):
+                        login_exitoso = True
+
+            # --- LÓGICA PARA ADMINISTRATIVOS ---
+            elif tipo == "administrativo" and usuario["id_estudiante"] is None:
+                if usuario["password_hash"] and check_password_hash(usuario["password_hash"], password):
+                    login_exitoso = True
+
+        # --- PROCESO DE SEGUNDO FACTOR (Si las credenciales fueron correctas) ---
+        if login_exitoso:
             codigo = ''.join(random.choices(string.digits, k=6))
-            cursor.execute("UPDATE usuarios SET codigo_verificacion = %s WHERE id = %s", (codigo, usuario['id']))
+            cursor.execute(
+                "UPDATE usuarios SET codigo_verificacion = %s WHERE id = %s",
+                (codigo, usuario['id'])
+            )
             conexion.connection.commit()
 
             try:
-                msg = Message('Código de Verificación - Sistema U', 
-                              sender=app.config['MAIL_USERNAME'], 
-                              recipients=[usuario['email']])
+                msg = Message(
+                    'Código de Verificación - Sistema U',
+                    sender=("Sistema de Gestión Académica", app.config['MAIL_USERNAME']),
+                    recipients=[usuario['email']]
+                )
                 msg.body = f"Tu código de acceso es: {codigo}"
                 mail.send(msg)
+
+                # Guardamos datos en sesión para el 2FA
                 session['auth_user_id'] = usuario['id']
+                session['rol_temporal'] = usuario['rol']
+                session['id_estudiante'] = usuario['id_estudiante']
+
+                # Mantenemos tu redirección original al 2FA
                 return redirect(url_for('segundo_factor'))
+
             except Exception as e:
-                flash("Error al enviar el correo.", "danger")
+                print(f"Error mail: {e}")
+                flash("Error al enviar el correo de verificación.", "danger")
+                return render_template("login.html")
         
-        flash("Usuario o contraseña incorrectos", "danger")
+        # Si llega aquí, es que falló alguna validación
+        cursor.close()
+        flash("Usuario o contraseña incorrectos para el rol seleccionado", "danger")
+        return render_template("login.html")
+
     return render_template("login.html")
+
+
+
+
+
 
 @app.route("/verificar-codigo", methods=["GET", "POST"])
 def segundo_factor():
@@ -142,19 +204,66 @@ def segundo_factor():
         cursor.execute("SELECT * FROM usuarios WHERE id = %s", (user_id,))
         usuario = cursor.fetchone()
 
-        if usuario['codigo_verificacion'] == codigo_ingresado:
-            session.clear()
-            session['user_id'] = usuario['id']
-            session['username'] = usuario['username']
-            session['rol'] = usuario['rol']
+        if usuario and usuario['codigo_verificacion'] == codigo_ingresado:
+            # Guardamos los datos necesarios antes de limpiar o después
+            id_est = usuario['id_estudiante']
+            user_nom = usuario['username']
+            user_rol = usuario['rol']
+            u_id = usuario['id']
+
+            session.clear() # Limpia lo temporal del 2FA
             
-            cursor.execute("UPDATE usuarios SET codigo_verificacion = NULL WHERE id = %s", (user_id,))
+            # SESIÓN DEFINITIVA
+            session['user_id'] = u_id
+            session['username'] = user_nom
+            session['rol'] = user_rol
+            session['id_estudiante'] = id_est  # <--- ESTA ES LA LÍNEA QUE FALTABA
+            session['id_estudiante'] = usuario['id_estudiante']
+            
+            cursor.execute("UPDATE usuarios SET codigo_verificacion = NULL WHERE id = %s", (u_id,))
             conexion.connection.commit()
             return redirect(url_for('index'))
         else:
             flash("Código de verificación incorrecto.", "danger")
             
     return render_template("verificar.html")
+
+@app.route("/reenviar-codigo")
+def reenviar_codigo():
+    # 1. Recuperamos al usuario de la sesión temporal que creaste en el login
+    user_id = session.get('auth_user_id')
+    
+    if not user_id:
+        flash("Sesión expirada. Por favor, inicia sesión de nuevo.", "danger")
+        return redirect(url_for('login'))
+
+    # 2. Buscamos al usuario en la DB para obtener su correo
+    cursor = conexion.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT email FROM usuarios WHERE id = %s", (user_id,))
+    usuario = cursor.fetchone()
+
+    if usuario:
+        # 3. Generamos un código nuevo (igual que en el login)
+        nuevo_codigo = ''.join(random.choices(string.digits, k=6))
+        
+        # 4. Actualizamos en la DB
+        cursor.execute("UPDATE usuarios SET codigo_verificacion = %s WHERE id = %s", (nuevo_codigo, user_id))
+        conexion.connection.commit()
+
+        # 5. Enviamos el correo con el formato profesional
+        try:
+            msg = Message('Nuevo Código de Verificación', 
+                          sender=("Sistema de Gestión Académica", app.config['MAIL_USERNAME']), 
+                          recipients=[usuario['email']])
+            msg.body = f"Tu nuevo código de acceso es: {nuevo_codigo}"
+            mail.send(msg)
+            
+            flash("Se ha enviado un nuevo código a tu correo.", "success")
+        except Exception as e:
+            flash("Error al reenviar el correo.", "danger")
+
+    # 6. Siempre redirigimos de vuelta a la página donde se mete el código
+    return redirect(url_for('segundo_factor'))
 
 @app.route("/logout")
 def logout():
@@ -166,6 +275,56 @@ def logout():
         cursor.close()
     session.clear()
     return redirect(url_for("login"))
+
+@app.route('/recuperar', methods=['GET', 'POST'])
+def recuperar():
+    if request.method == 'POST':
+        matricula = request.form['matricula'] # Cambio a matrícula
+        email = request.form['email']
+        
+        cur = conexion.connection.cursor() 
+        
+        # Buscamos en la tabla ESTUDIANTES
+        cur.execute("SELECT * FROM estudiantes WHERE matricula = %s AND email = %s", (matricula, email))
+        estudiante = cur.fetchone()
+        
+        if estudiante:
+            # Generamos código de 6 dígitos
+            codigo = str(random.randint(100000, 999999))
+    
+            # GUARDAMOS en la columna que creaste en la tabla estudiantes
+            cur.execute("UPDATE estudiantes SET codigo_verificacion = %s WHERE matricula = %s", (codigo, matricula))
+            
+            # Historial (opcional, ajustado)
+            evento_desc = f"Solicitó recuperación para matrícula: {matricula}"
+            cur.execute("INSERT INTO historial_accesos (usuario_intentado, evento, resultado) VALUES (%s, %s, %s)", 
+                        (matricula, evento_desc, "Válido"))
+            
+            conexion.connection.commit()
+            cur.close()
+            
+            # Enviar Correo
+            msg = Message("Recuperación de Contraseña",
+                          sender=("Sistema de Gestión Académica", app.config['MAIL_USERNAME']),
+                          recipients=[email])
+            msg.body = f"Hola, tu código para cambiar la contraseña es: {codigo}"
+            
+            try:
+                mail.send(msg)
+                flash("Se ha enviado un código a tu correo institucional.", "success")
+                return redirect(url_for('verificar_recuperacion', email=email))
+            except Exception as e:
+                flash("Error al enviar el correo. Revisa tu conexión.", "danger")
+                return redirect(url_for('recuperar'))
+        else:
+            cur.close()
+            flash("La matrícula o el correo no coinciden.", "danger")
+            return redirect(url_for('recuperar'))
+            
+    return render_template('recuperar.html')
+
+
+
 
 # ==========================================
 # 5. ADMINISTRACIÓN Y USUARIOS
@@ -225,10 +384,9 @@ def editar_usuario(id):
         usuario_afectado = cursor.fetchone()
         nombre_afectado = usuario_afectado['username'] if usuario_afectado else str(id)
 
-        # Actualizamos al usuario
+        # Actualizar usuario
         cursor.execute("UPDATE usuarios SET rol=%s, email=%s WHERE id=%s", (nuevo_rol, nuevo_email, id))
-        
-        # --- ESTO ES LO QUE FALTA PARA TU TABLA DE LOGS ---
+  
         evento_descripcion = f"Modificó al usuario: {nombre_afectado} (Rol: {nuevo_rol})"
         cursor.execute("INSERT INTO historial_accesos (usuario_intentado, evento, resultado) VALUES (%s, %s, %s)", 
                        (session['username'], evento_descripcion, "Válido"))
@@ -268,6 +426,69 @@ def ver_historial():
 # 6. GESTIÓN ACADÉMICA (CRUDs)
 # ==========================================
 
+@app.route('/perfil')
+@login_required
+def perfil():
+    cursor = conexion.connection.cursor(MySQLdb.cursors.DictCursor)
+    
+    try:
+        # Buscamos en la tabla 'estudiantes' usando la matrícula guardada en la sesión
+        # Cambiamos 'ci = %s' por 'matricula = %s'
+        query = """
+            SELECT nombre, apellido, ci, matricula, carrera, email, telefono 
+            FROM estudiantes 
+            WHERE matricula = %s
+        """
+        
+        # IMPORTANTE: Asegúrate de que al loguearse, guardaste la matrícula en session['username']
+        cursor.execute(query, (session.get('username'),))
+        datos_perfil = cursor.fetchone()
+        
+        # Auditoría
+        cursor.execute("INSERT INTO historial_accesos (usuario_intentado, evento, resultado) VALUES (%s, %s, %s)", 
+                       (session.get('username'), "Accedió a su perfil académico", "Válido"))
+        
+        conexion.connection.commit()
+    except Exception as e:
+        print(f"Error en la consulta de perfil: {e}")
+        datos_perfil = None
+    finally:
+        cursor.close()
+    
+    return render_template('perfil.html', perfil=datos_perfil)
+
+
+
+@app.route('/mis_materias')
+def mis_materias():
+    if 'id_estudiante' not in session:
+        return redirect(url_for('login'))
+
+    id_estudiante = session['id_estudiante']
+
+    cursor = conexion.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("""
+        SELECT m.nombre_materia, m.sigla
+        FROM inscripciones i
+        JOIN materias m ON i.id_materia = m.id_materia
+        WHERE i.id_estudiante = %s
+    """, (id_estudiante,))
+    
+    materias = cursor.fetchall()
+    cursor.close()
+
+    return render_template('mis_materias.html', materias=materias)
+    
+ 
+
+
+
+
+
+
+
+
+
 # --- ESTUDIANTES ---
 @app.route("/estudiantes")
 @login_required
@@ -299,22 +520,100 @@ def nuevo_estudiante():
 
 @app.route("/estudiantes/modificar/<int:id>", methods=['GET', 'POST'])
 @login_required
-@role_required(['admin', 'operador'])
 def modificar_estudiante(id):
     cursor = conexion.connection.cursor(MySQLdb.cursors.DictCursor)
-    if request.method == 'POST':
-        datos = (request.form['nombre'], request.form['apellido'], request.form['carrera'], request.form['email'], request.form['telefono'], id)
-        cursor.execute("UPDATE estudiantes SET nombre=%s, apellido=%s, carrera=%s, email=%s, telefono=%s WHERE id_estudiante=%s", datos)
-        cursor.execute("INSERT INTO historial_accesos (usuario_intentado, evento, resultado) VALUES (%s, %s, %s)", 
-                       (session['username'], f"Modificó al estudiante ID {id}", "Válido"))
-        conexion.connection.commit()
+    rol_actual = session.get('rol') # Verifica que sea 'user', 'admin', etc.
+    
+    # 1. Obtener datos actuales del estudiante
+    cursor.execute("SELECT * FROM estudiantes WHERE id_estudiante = %s", (id,))
+    estudiante = cursor.fetchone()
+
+    if not estudiante:
         cursor.close()
+        flash("Estudiante no encontrado", "danger")
         return redirect(url_for('mostrar_estudiantes'))
+
+    if request.method == 'POST':
+        try:
+            # Lógica de campos según rol
+            if rol_actual == 'user':
+                # El estudiante NO manda nombre/apellido, usamos los de la BD
+                nombre = estudiante['nombre']
+                apellido = estudiante['apellido']
+                carrera = estudiante['carrera']
+            else:
+                # El Admin SÍ manda todo
+                nombre = request.form.get('nombre')
+                apellido = request.form.get('apellido')
+                carrera = request.form.get('carrera')
+            
+            email = request.form.get('email')
+            telefono = request.form.get('telefono')
+
+            # 2. Ejecutar la actualización
+            sql = "UPDATE estudiantes SET nombre=%s, apellido=%s, carrera=%s, email=%s, telefono=%s WHERE id_estudiante=%s"
+            cursor.execute(sql, (nombre, apellido, carrera, email, telefono, id))
+            conexion.connection.commit()
+            flash("Información actualizada con éxito", "success")
+            
+            # 3. REDIRECCIÓN TRAS EL POST (Importante para evitar el TypeError)
+            if rol_actual == 'user':
+                return redirect(url_for('perfil'))
+            else:
+                return redirect(url_for('mostrar_estudiantes'))
+
+        except Exception as e:
+            print(f"Error en el servidor: {e}")
+            flash("Ocurrió un error al guardar los cambios", "danger")
+            return render_template("formulario_modificar_estudiante.html", estudiante=estudiante)
+        finally:
+            cursor.close()
+            
     else:
-        cursor.execute("SELECT * FROM estudiantes WHERE id_estudiante = %s", (id,))
+        # 4. RESPUESTA PARA EL MÉTODO GET (Mostrar el formulario)
+        cursor.close()
+        return render_template("formulario_modificar_estudiante.html", estudiante=estudiante)
+    
+
+
+@app.route("/perfil/editar", methods=['GET', 'POST'])
+def editar_mi_perfil():
+    id_est = session.get('id_estudiante')
+    if not id_est:
+        flash("Inicia sesión para continuar", "danger")
+        return redirect(url_for('login'))
+
+    cursor = conexion.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if request.method == 'POST':
+        # RECIBIMOS SOLO LOS DATOS PERMITIDOS
+        nuevo_email = request.form.get('email')
+        nuevo_telefono = request.form.get('telefono')
+
+        try:
+            # ACTUALIZAMOS SOLO CORREO Y TELÉFONO
+            query = "UPDATE estudiantes SET email=%s, telefono=%s WHERE id_estudiante=%s"
+            cursor.execute(query, (nuevo_email, nuevo_telefono, id_est))
+            conexion.connection.commit()
+            
+            flash("Información de contacto actualizada correctamente", "success")
+            # Asegúrate de que esta sea la función que muestra tu perfil
+            return redirect(url_for('perfil_estudiante')) 
+            
+        except Exception as e:
+            print(f"Error: {e}")
+            flash("No se pudo actualizar la información.", "danger")
+        finally:
+            cursor.close()
+    
+    else:
+        # GET: Cargamos los datos para llenar el formulario
+        cursor.execute("SELECT * FROM estudiantes WHERE id_estudiante = %s", (id_est,))
         estudiante = cursor.fetchone()
         cursor.close()
         return render_template("formulario_modificar_estudiante.html", estudiante=estudiante)
+
+
 
 @app.route("/estudiantes/eliminar/<int:id>")
 @login_required
@@ -542,6 +841,7 @@ def nueva_inscripcion():
 def modificar_inscripcion(id):
     cursor = conexion.connection.cursor(MySQLdb.cursors.DictCursor)
     if request.method == 'POST':
+        # ... (tu código de POST se queda igual)
         datos = (request.form['id_estudiante'], request.form['id_materia'], id)
         cursor.execute("UPDATE inscripciones SET id_estudiante=%s, id_materia=%s WHERE id_inscripcion=%s", datos)
         conexion.connection.commit()
@@ -550,8 +850,11 @@ def modificar_inscripcion(id):
     else:
         cursor.execute("SELECT * FROM inscripciones WHERE id_inscripcion = %s", (id,))
         inscripcion = cursor.fetchone()
-        cursor.execute("SELECT id_estudiante, nombre FROM estudiantes")
+        
+        # --- CAMBIO AQUÍ: Agregamos 'apellido' a la consulta ---
+        cursor.execute("SELECT id_estudiante, nombre, apellido FROM estudiantes")
         estudiantes = cursor.fetchall()
+        
         cursor.execute("SELECT id_materia, nombre_materia FROM materias")
         materias = cursor.fetchall()
         cursor.close()

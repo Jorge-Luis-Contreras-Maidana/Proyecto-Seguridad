@@ -1,55 +1,114 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Registro de Usuario - Sistema U</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        .requisitos { font-size: 0.85em; color: #666; margin-top: 5px; }
-        .error-msg { color: #d9534f; background: #f2dede; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
-    </style>
-</head>
-<body>
-    <div class="login-container">
-        <h2>Crear Nueva Cuenta</h2>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="error-msg">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Reutilizamos el estilo de tarjeta centrado que ya tienes en Login */
+    .centered-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        width: 100%;
+    }
+
+    .register-card {
+        width: 100%;
+        max-width: 450px;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        background-color: rgba(255, 255, 255, 0.95); /* Fondo casi blanco para legibilidad */
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .form-group input {
+        padding: 10px;
+        border: 1px solid #777;
+        border-radius: 6px;
+        font-size: 1em;
+    }
+
+    .requisitos {
+        font-size: 0.85em;
+        color: #555;
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 5px;
+        border-left: 4px solid #28a745;
+    }
+
+    .requisitos ul {
+        margin: 5px 0 0 15px;
+        padding: 0;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 12px;
+        background-color: #28a745; /* Verde para combinar con tus otros botones */
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-top: 15px;
+    }
+
+    .btn-primary:hover {
+        background-color: #218838;
+    }
+</style>
+
+<div class="centered-container">
+    <div class="register-card">
+        <h2 style="text-align: center; margin-bottom: 25px;">Crear Nueva Cuenta</h2>
 
         <form action="{{ url_for('registro') }}" method="POST">
             <div class="form-group">
-                <label>Nombre de Usuario:</label>
+                <label>Nombre de Usuario</label>
                 <input type="text" name="username" required placeholder="Ej: jorge_admin">
             </div>
             
             <div class="form-group">
-                <label>Correo Electrónico:</label>
+                <label>Correo Electrónico</label>
                 <input type="email" name="email" required placeholder="correo@ejemplo.com">
             </div>
 
             <div class="form-group">
-                <label>Contraseña:</label>
+                <label>Contraseña</label>
                 <input type="password" name="password" required>
                 <div class="requisitos">
                     <b>La contraseña debe tener:</b>
                     <ul>
-                        <li>Al menos 8 caracteres</li>
-                        <li>Una mayúscula y una minúscula</li>
-                        <li>Un número y un carácter especial (!@#$)</li>
+                        <li>Mínimo 8 caracteres</li>
+                        <li>Mayúscula y minúscula</li>
+                        <li>Número y carácter especial</li>
                     </ul>
                 </div>
             </div>
 
             <button type="submit" class="btn-primary">REGISTRARSE</button>
-            <p style="margin-top: 15px;">
-                <a href="{{ url_for('login') }}">¿Ya tienes cuenta? Inicia sesión aquí</a>
-            </p>
+            
+            <div style="margin-top: 20px; text-align: center; border-top: 1px solid #eee; padding-top: 15px;">
+                <a href="{{ url_for('login') }}" style="color: #007bff; text-decoration: none; font-weight: bold; font-size: 0.9em;">
+                    ¿Ya tienes cuenta? Inicia sesión aquí
+                </a>
+            </div>
         </form>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

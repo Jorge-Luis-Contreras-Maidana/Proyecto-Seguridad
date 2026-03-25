@@ -1,25 +1,32 @@
 {% extends "inicio.html" %}
 
 {% block content %}
-    <h1>Nueva Materia</h1>
+    <h1 style="color: #2c3e50; margin-bottom: 20px;">Nueva Materia</h1>
+    
     <form action="{{ url_for('nueva_materia') }}" method="post" style="max-width: 400px; margin: auto;">
-        <label>Nombre Materia:</label><br><input type="text" name="nombre" required style="width: 100%; margin-bottom: 10px;"><br>
-        <label>Sigla:</label><br><input type="text" name="sigla" required style="width: 100%; margin-bottom: 10px;"><br>
+        
+        <label>Nombre Materia:</label><br>
+        <input type="text" name="nombre" required style="width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;"><br>
+        
+        <label>Sigla:</label><br>
+        <input type="text" name="sigla" required style="width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;"><br>
         
         <label>Docente:</label><br>
-        <select name="id_docente" style="width: 100%; margin-bottom: 10px;">
+        <select name="id_docente" style="width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;">
             {% for d in docentes %}
-                <option value="{{ d.id_docente }}">{{ d.nombre }}</option>
+                <option value="{{ d.id_docente }}">{{ d.nombre }} {{ d.apellido }}</option>
             {% endfor %}
         </select><br>
         
         <label>Aula:</label><br>
-        <select name="id_aula" style="width: 100%; margin-bottom: 10px;">
+        <select name="id_aula" style="width: 100%; padding: 8px; margin-bottom: 20px; box-sizing: border-box;">
             {% for a in aulas %}
                 <option value="{{ a.id_aula }}">{{ a.nombre_aula }}</option>
             {% endfor %}
-        </select><br><br>
+        </select><br>
         
-        <button type="submit">Guardar Materia</button>
+        <button type="submit" style="padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold;">Guardar Materia</button>
+        <a href="/materias" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; display: inline-block; margin-left: 5px;">Cancelar</a>
+
     </form>
 {% endblock %}

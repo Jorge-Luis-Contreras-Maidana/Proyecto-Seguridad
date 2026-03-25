@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema Universitario</title>
     <style>
-        /* --- 1. Fondo Azul Difuminado --- */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
@@ -16,7 +15,6 @@
             color: #333;
         }
 
-        /* --- 2. Barra de Navegación Estilo Cristal --- */
         header {
             background: rgba(30, 30, 118, 0.83); /* Semi-transparente */
             backdrop-filter: blur(10px); /* Efecto de desenfoque */
@@ -41,7 +39,6 @@
             gap: 5px;
         }
 
-        /* Estilo para los enlaces como botones suaves */
         nav a { 
             text-decoration: none; 
             color: white; 
@@ -57,17 +54,13 @@
             transform: translateY(-2px);
         }
 
-        /* Separadores visuales más sutiles */
         .separator {
             color: rgba(255, 255, 255, 0.4);
             margin: 0 2px;
         }
 
-        /* --- 3. Botones Especiales --- */
         .btn-admin-usuarios { 
-            {# background: rgba(40, 167, 70, 0.81); #}
             color: #ffffff !important; 
-            {# border: 1px solid rgba(40, 167, 69, 0.4); #}
         }
         .btn-admin-usuarios:hover {
             background: #28a745 !important;
@@ -75,16 +68,13 @@
         }
 
         .btn-auditor-logs { 
-            {# background: rgba(220, 53, 69, 0.2); #}
             color: #ffffff !important; 
-            {# border: 1px solid rgba(220, 53, 69, 0.4); #}
         }
         .btn-auditor-logs:hover {
             background: #dc3545 !important;
             color: white !important;
         }
 
-        /* --- 4. Info de Usuario --- */
         .user-info { 
             background: rgba(0, 0, 0, 0.2);
             padding: 8px 15px;
@@ -102,13 +92,16 @@
             font-size: 0.9em;
         }
 
-        /* --- 5. Contenido Principal --- */
         main {
-            background-color: rgba(255, 255, 255, 0.95);
             padding: 30px;
             border-radius: 15px;
             min-height: 400px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background-image: linear-gradient(rgba(189, 163, 163, 0.61), rgba(200, 94, 94, 0.8)), 
+                            url("{{ url_for('static', filename='img/img_umsa.jpg') }}") !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
         }
 
         .alert { 
@@ -131,28 +124,35 @@
                 <div class="nav-links">
                     <a href="{{ url_for('index') }}">Inicio</a>
 
-                    {% if session.get('rol') in ['admin', 'operador','user'] %}
+                    {# SECCIÓN PARA ADMINISTRATIVOS / OPERADORES #}
+                    {% if session.get('rol') in ['admin', 'operador'] %}
                         <span class="separator">|</span>
                         <a href="{{ url_for('mostrar_estudiantes') }}">Estudiantes</a>
                         <a href="{{ url_for('mostrar_docentes') }}">Docentes</a>
                         <a href="{{ url_for('mostrar_aulas') }}">Aulas</a>
                         <a href="{{ url_for('mostrar_materias') }}">Materias</a>
                         <a href="{{ url_for('mostrar_inscripciones') }}">Inscripciones</a> 
-                    {% endif %}
+                        
+                        {% if session.get('rol') == 'admin' %}
+                            <a href="{{ url_for('gestionar_usuarios') }}" class="btn-admin-usuarios">Usuarios</a>
+                        {% endif %}
 
-                    {% if session.get('rol') == 'admin' %}
-                        <span class="separator">|</span>
-                        <a href="{{ url_for('gestionar_usuarios') }}" class="btn-admin-usuarios">Usuarios</a>
-                    {% endif %}
-
-                    {% if session.get('rol') in ['admin', 'auditor'] %}
+                    {# SECCIÓN PARA AUDITORES #}
+                    {% elif session.get('rol') == 'auditor' %}
                         <span class="separator">|</span>
                         <a href="{{ url_for('ver_historial') }}" class="btn-auditor-logs">Historial Logs</a>
+
+                    {# SECCIÓN PARA ESTUDIANTES (USER) #}
+                    {% elif session.get('rol') == 'user' %}
+                        <span class="separator">|</span>
+                        <a href="{{ url_for('perfil') }}">Mi Perfil</a>
+                        <a href="{{ url_for('mis_materias') }}">Mis Materias</a>
+                        {#<a href="{{ url_for('mis_notas') }}">Mis Notas</a> #}
                     {% endif %}
                 </div>
 
                 <div class="user-info">
-                    <span>Usuario: <strong>{{ session.get('username') }}</strong> <small>({{ session.get('rol')|upper }})</small></span>
+                    <span>Usuario: <strong>{{ session.get('display_name', session.get('username')) }}</strong> <small>({{ session.get('rol')|upper }})</small></span>
                     <a href="{{ url_for('logout') }}">Salir</a>
                 </div>
             {% else %}

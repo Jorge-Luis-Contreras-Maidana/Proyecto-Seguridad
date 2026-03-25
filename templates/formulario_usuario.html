@@ -33,9 +33,9 @@
         <div style="margin-bottom: 25px;">
             <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #555;">Rol del Sistema</label>
             <select name="rol" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: white;">
-                <option value="user" {% if usuario and usuario.rol == 'user' %}selected{% endif %}>Usuario (Solo lectura)</option>
-                <option value="operador" {% if usuario and usuario.rol == 'operador' %}selected{% endif %}>Operador (Edición académica)</option>
-                <option value="auditor" {% if usuario and usuario.rol == 'auditor' %}selected{% endif %}>Auditor (Solo Logs)</option>
+                <option value="estudiante" {% if usuario and usuario.rol == 'supervisor' %}selected{% endif %}>Supervisor (Consulta de notas)</option>
+                <option value="docente" {% if usuario and usuario.rol == 'operador' %}selected{% endif %}>Operador (Gestión académica)</option>
+                <option value="auditor" {% if usuario and usuario.rol == 'auditor' %}selected{% endif %}>Auditor (Supervisión de Logs)</option>
                 <option value="admin" {% if usuario and usuario.rol == 'admin' %}selected{% endif %}>Administrador (Control total)</option>
             </select>
         </div>

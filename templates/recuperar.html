@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+    <div style="max-width: 400px; width: 100%; background: #ffffff; padding: 30px; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        
+        <h2 style="color: #2c3e50; text-align: center; margin-bottom: 10px;">Recuperar Cuenta</h2>
+        <p style="font-size: 0.85em; color: #666; text-align: center; margin-bottom: 20px;">
+            Ingresa tu matrícula y el correo asociado para validar tu identidad.
+        </p>
+
+        <form action="{{ url_for('recuperar') }}" method="POST">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Matrícula:</label>
+                
+                <input type="text" name="matricula" required placeholder="Ingresa tu matrícula" 
+                       style="width: 100%; padding: 10px; border: 1px solid #777; border-radius: 4px; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Correo Electrónico:</label>
+                <input type="email" name="email" required placeholder="ejemplo@correo.com" 
+                       style="width: 100%; padding: 10px; border: 1px solid #777; border-radius: 4px; box-sizing: border-box;">
+            </div>
+
+            <div style="text-align: center;">
+                <button type="submit" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-transform: uppercase;">
+                    Verificar Datos
+                </button>
+                <div style="margin-top: 15px;">
+                    <a href="{{ url_for('login') }}" style="color: #007bff; text-decoration: none; font-size: 0.9em;">
+                        Volver al Login
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

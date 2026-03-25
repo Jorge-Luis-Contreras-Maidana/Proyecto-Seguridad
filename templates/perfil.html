@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 40px auto; background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    
+    <h2 style="text-align: center; color: #1e3c72; border-bottom: 2px solid #1e3c72; padding-bottom: 10px; margin-bottom: 25px;">
+        🎓 Mi Perfil de Estudiante
+    </h2>
+    
+    <div style="line-height: 1.8; color: #333;">
+        {% if perfil %}
+            <p style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                <strong style="color: #1e3c72;">Nombre Completo:</strong> 
+                {{ perfil.nombre }} {{ perfil.apellido }}
+            </p>
+            
+            <p style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                <strong style="color: #1e3c72;">Matrícula:</strong> 
+                <code style="background: #e9ecef; padding: 2px 5px; border-radius: 4px;">{{ perfil.matricula }}</code>
+            </p>
+            
+            <p style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                <strong style="color: #1e3c72;">Cédula de Identidad:</strong> 
+                {{ perfil.ci }}
+            </p>
+            
+            <p style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                <strong style="color: #1e3c72;">Carrera:</strong> 
+                {{ perfil.carrera }}
+            </p>
+            
+            <p style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                <strong style="color: #1e3c72;">Correo Electrónico:</strong> 
+                {{ perfil.email }}
+            </p>
+            
+            <p style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                <strong style="color: #1e3c72;">Teléfono:</strong> 
+                {{ perfil.telefono if perfil.telefono else 'No registrado' }}
+            </p>
+            
+            <p>
+                <strong style="color: #1e3c72;">Estado Académico:</strong> 
+                <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 0.9em; font-weight: bold;">
+                    ● Activo
+                </span>
+            </p>
+
+            <div style="text-align: center; margin-top: 30px; border-top: 2px dashed #eee; padding-top: 20px;">
+                <a href="{{ url_for('editar_mi_perfil') }}" 
+                   style="background: #f39c12; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; transition: background 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.1);"
+                   onmouseover="this.style.background='#d68910'" 
+                   onmouseout="this.style.background='#f39c12'">
+                   ✏️ Editar mi Información
+                </a>
+                <p style="font-size: 0.85em; color: #666; margin-top: 10px;">
+                    * Solo puedes modificar datos de contacto y nombres.
+                </p>
+            </div>
+
+        {% else %}
+            <div style="background: #fee2e2; color: #b91c1c; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #f87171;">
+                <strong style="display: block; font-size: 1.1em; margin-bottom: 5px;">⚠️ Datos no encontrados</strong>
+                No se encontró información vinculada a la sesión actual: 
+                <br><strong>{{ session.get('nombre', 'Usuario desconocido') }}</strong>
+            </div>
+        {% endif %}
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="{{ url_for('index') }}" 
+           style="color: #1e3c72; text-decoration: none; font-weight: bold; font-size: 0.95em;">
+           ← Volver al Inicio
+        </a>
+    </div>
+</div>
+{% endblock %}

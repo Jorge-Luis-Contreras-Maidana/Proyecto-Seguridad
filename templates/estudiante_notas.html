@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="background: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+    <h2 style="color: #1e3c72; text-align: center; margin-bottom: 25px;">Mi Kárdex Académico</h2>
+    
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden;">
+            <thead>
+                <tr style="background: #1e3c72; color: white; text-align: left;">
+                    <th style="padding: 15px;">Materia</th>
+                    <th style="padding: 15px;">Docente</th>
+                    <th style="padding: 15px;">Fecha Inscripción</th>
+                    <th style="padding: 15px;">Calificación</th>
+                    <th style="padding: 15px;">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for nota in notas %}
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 15px; font-weight: bold;">{{ nota[0] }}</td>
+                    <td style="padding: 15px;">{{ nota[1] }} {{ nota[2] }}</td>
+                    <td style="padding: 15px;">{{ nota[3] }}</td>
+                    <td style="padding: 15px; font-size: 1.2em; color: #1e3c72;">
+                        {{ nota[4] if nota[4] else 'Sin nota' }}
+                    </td>
+                    <td style="padding: 15px;">
+                        {% if nota[4] %}
+                            {% if nota[4] >= 51 %}
+                                <span style="background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 5px; font-size: 0.9em;">Aprobado</span>
+                            {% else %}
+                                <span style="background: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 5px; font-size: 0.9em;">Reprobado</span>
+                            {% endif %}
+                        {% else %}
+                            <span style="background: #fff3cd; color: #856404; padding: 5px 10px; border-radius: 5px; font-size: 0.9em;">Pendiente</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="padding: 20px; text-align: center; color: #666;">
+                        No tienes materias inscritas actualmente.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="margin-top: 20px; text-align: right;">
+        <button onclick="window.print()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">
+            Imprimir Reporte
+        </button>
+    </div>
+</div>
+{% endblock %}
